@@ -1,0 +1,480 @@
+package studentCode;
+
+import java.util.ArrayList;
+
+
+/** 
+ * A data structure class that stores deep copies of any critiqueable items 
+ * that are sent to be critiqued.  By having deep copies, the player's
+ * critiqueable item does not get permanently altered in their personal 
+ * library, only in this playing of the game.
+ * <br><br>
+ * A CardsAgainstCriticsDeck object has a list of Critiqueable items
+ * held in an ArrayList object.  It cannot be used to hold anything that
+ * doesn't implement the Critiqueable interface.
+ */
+public class CardsAgainstCriticsDeck<T extends Critiqueable> {
+	private ArrayList<Critiqueable> arr;
+	private int counterAdd;
+	
+	//You might end up adding more fields...
+
+
+	/**
+	 * Standard constructor.  It needs to initialize the ArrayList object 
+	 * and do any other setup that you deem necessary for this class object.
+	 */
+	public CardsAgainstCriticsDeck() {
+		arr = new ArrayList<Critiqueable>();
+	}
+
+	
+	
+	/**
+	 * Adds an item to the CardsAgainstCriticsDeck in a very special way.  
+	 * The structure is double-ended; this means that the "side" to which
+	 * objects are added alternates with every other item added.  If things
+	 * are added in the order 1,2,3,4,5 then the CardsAgainstCriticsDeck 
+	 * would grow as the following:<br>
+	 * &nbsp;&nbsp;&nbsp;1<br>
+	 * &nbsp;&nbsp;&nbsp;1,2<br>
+	 * &nbsp;&nbsp;&nbsp;3,1,2<br>
+	 * &nbsp;&nbsp;&nbsp;3,1,2,4<br>
+	 * &nbsp;&nbsp;&nbsp;5,3,1,2,4<br>
+	 * It is your job to determine a good way to ensure this alternation.
+	 * 
+	 * You can add an instance field to the class if needed in making this
+	 * method work correctly.
+	 * 
+	 * @param newItem refers to a critiqueable item to be added to this CardsAgainstCriticsDeck
+	 */
+	public void add(T newItem) {
+		counterAdd = 1;
+		if(counterAdd == 1)
+		{
+			arr.add(newItem);
+			counterAdd++;
+		}
+		else if(counterAdd%2 == 0)
+		{
+			arr.add(newItem);
+			counterAdd++;
+		}
+		else 
+		{
+			arr.add(0, newItem);
+			counterAdd++;
+		}
+	}
+
+	
+	
+	/**
+	 * Goes through each item in the CardsAgainstCriticsDeck and adds the 
+	 * specified number of fans to every critiqueable item it contains.
+	 * 
+	 * @param fanGain the value to add to the number of fans
+	 */
+	public void freshenUp(int fanGain) {
+		for(int i = 0; i < arr.size(); i++)
+		{
+			arr.get(i).setFans(arr.get(i).getFans()+fanGain);
+		}
+	}
+	
+	/**
+	 * Goes through each item in the CardsAgainstCriticsDeck and deducts the 
+	 * specified number of fans from every critiqueable item it contains.
+	 * 
+	 * @param fanLoss the value to deduct from the number of fans
+	 */
+	public void rottenDown(int fanLoss) {
+		for(int i = 0; i < arr.size(); i++)
+		{
+			arr.get(i).setFans(arr.get(i).getFans()-fanLoss);
+		}
+	}
+	
+	
+	/**
+	 * Removes any critiqueable item currently in the critique deck that have
+	 * no more fans left.
+	 */
+	public void sweepDeck() {
+		for(int i = 0; i < arr.size(); i++)
+		{
+			if(arr.get(i).getFans() == 0)
+			{
+				arr.remove(i);
+			}
+		}
+	}
+	
+	
+	
+	/**
+	 * Shuffles the contents of the deck in the way described here. 
+	 * The deck will be divided into two "packets" (we will call them 
+	 * the top half and the bottom half).  The shuffled CardsAgainstCriticsDeck
+	 * will consist of the first card from the top packet, 
+	 *    followed by the first card from the bottom packet, 
+	 *    followed by the second card from the top packet, 
+	 *    followed by the second card from the bottom packet, etc. 
+	 * 
+	 * Important: If there are an odd number of cards, the top packet 
+	 * should have one more card than the bottom packet. 
+	 * 
+	 * Remember that the top of the deck is considered to be the front 
+	 * of the ArrayList. 
+	 * 
+	 */
+	public void shuffle() {
+		ArrayList<Critiqueable> top = new ArrayList<Critiqueable>();
+		ArrayList<Critiqueable> bottom = new ArrayList<Critiqueable>();
+		ArrayList<Critiqueable> shuffled = new ArrayList<Critiqueable>();
+		int topCounter = 0;
+		int botCounter = 0;
+		for(int a = 0; a <= arr.size()/2; a++)
+		{
+			top.get(a).equals(arr.get(a));
+		}
+		for(int b = (arr.size()/2); b < arr.size(); b++)
+		{
+			bottom.get(b).equals(arr.get(b));
+		}
+		for(int c = 0; c < arr.size(); c++)
+		{
+			if(topCounter == 0)
+			{
+				shuffled.add(top.get(topCounter));
+				topCounter++;
+			}
+			else if(topCounter > botCounter)
+			{
+				shuffled.add(bottom.get(botCounter));
+				botCounter++;
+			}
+			else
+			{
+				shuffled.add(top.get(topCounter));
+				topCounter++;
+			}
+		}
+		
+	}
+	
+	/**
+	 * The method is meant to allow the next two critiqueable items to be critiqued
+	 * against each other, and for the winner to be returned.
+	 * <br><br>
+	 * If there are no critiqueable items in the structure, returns null.<br>
+	 * If there is only one critiqueable item in the structure, it is removed
+	 * and declared the winner<br>
+	 * Otherwise, there is a series of events that takes place.
+	 * The following presents the events and the order in which 
+	 * the events must take place:<br>
+	 * 1. One critiqueable item is removed from each end of the structure
+	 *       and they will later be critiqued.<br>
+	 * 2. All critiqueable items remaining in the CardsAgainstCriticsDeck have their fan
+	 *       counts reduced by the following rules:<br>
+	 *         * If they have Star Power of more than 100, they lose 10 fans.<br>
+	 *         * Otherwise, if they have Star Power of more than 50, they lose 5 fans.<br>
+	 *         * Otherwise, they lose 1 fan.<br>
+	 * 3. The CardsAgainstCriticsDeck is cleared of any critiqueable items who no longer
+	 *       have any fans.<br>
+	 * 4. Use the freshenUp method to make it so that each critiqueable item still in 
+	 *       the CardsAgainstCriticsDeck gets one new fan. <br>
+	 * 5. The winner in solitaire critiques between the two critiqueable items removed
+	 *    in the first step above are determined in by two-step process; 
+	 *       (a) if they have different star power values, the one with the higher 
+	 *           star power value wins but if they have the same star power values then 
+	 *       (b) the one with the larger number of fans wins.  If they have the
+	 *           same star power values and the same number of fans, then whichever 
+	 *           of the two critiqueable items came from the front of the deck wins.
+	 * <br><br>
+	 * NOTE: The @SuppressWarnings("unchecked") indicator is to inform
+	 * the compiler that even though we don't test to make sure the cast
+	 * to T is valid, we are sure of our logic.
+	 * 
+	 * @return reference to the winning critiqueable item
+	 */
+	@SuppressWarnings("unchecked")
+	public T solitaireCritique() {
+		Critiqueable front;
+		Critiqueable back;
+		front = arr.remove(0);
+		back = arr.remove(arr.size()-1);
+		if(arr.size()==0)
+		{
+			return null;
+		}
+		else if(arr.size()==1)
+		{
+			arr.remove(0);
+			return (T) front;
+		}
+		else
+		{
+			for(int a = 0; a < arr.size(); a++)
+			{
+				if(arr.get(a).getStarPower() > 100)
+				{
+					arr.get(a).setFans(arr.get(a).getFans()-10);
+				}
+				else if(arr.get(a).getStarPower() > 50)
+				{
+					arr.get(a).setFans(arr.get(a).getFans()-5);
+				}
+				else
+				{
+					arr.get(a).setFans(arr.get(a).getFans()-1);
+				}
+			}
+		sweepDeck();
+		freshenUp(1);
+		if(front.getStarPower() > back.getStarPower())
+		{
+			return (T) front;
+		}
+		else if(front.getStarPower() < back.getStarPower())
+		{
+			return (T) back;
+		}
+		else 
+		{
+			if(front.getFans() > back.getFans())
+			{
+				return (T) front;
+			}
+			else
+			{
+				return (T) back;
+			}
+		}
+		}
+
+	}
+	
+	
+	
+	
+	/**
+	 * The method will return a ragged 2D structure using the Java array.
+	 * It will have references to deep copies of the critiqueable items 
+	 * currently stored in the CardsAgainstCriticsDeck.  
+	 * 
+	 * The 2D structure will have one row for each single-digit star power
+	 *  value (0 through 9) and then a row for all with higher star power
+	 *  values.  
+	 *  
+	 * Within each row the order will be based on the "front to back" order 
+	 * of them in the deck's single-dimensional structure.
+	 * 
+	 * NOTE: To build the ragged 2D structure, you'll need to read
+	 * through the list of critiqueable items once to determine how big each 
+	 * row will need to be and then another time to populate the 
+	 * ragged structure with the references to the copies of the 
+	 * critiqueable items.
+	 * 
+	 * @return reference to a ragged 2D structure using the java array
+	 */
+	public Critiqueable[][] export2Darray() {
+		Critiqueable[][] retVal = new Critiqueable[11][];
+		int zero = 0, one = 0, two = 0, three = 0 , four = 0, five = 0, six = 0, seven = 0, eight = 0, nine = 0, ten = 0;
+		//YOUR CODE GOES HERE
+		for(int a = 0; a < arr.size(); a++)
+		{
+			if(arr.get(a).getStarPower() == 0)
+			{
+				zero++;
+			}
+			else if(arr.get(a).getStarPower() == 1)
+			{
+				one++;
+			}
+			else if(arr.get(a).getStarPower() == 2)
+			{
+				two++;
+			}
+			else if(arr.get(a).getStarPower() == 3)
+			{
+				three++;
+			}
+			else if(arr.get(a).getStarPower() == 4)
+			{
+				four++;
+			}
+			else if(arr.get(a).getStarPower() == 5)
+			{
+				five++;
+			}
+			else if(arr.get(a).getStarPower() == 6)
+			{
+				six++;
+			}
+			else if(arr.get(a).getStarPower() == 7)
+			{
+				seven++;
+			}
+			else if(arr.get(a).getStarPower() == 8)
+			{
+				eight++;
+			}
+			else if(arr.get(a).getStarPower() == 9)
+			{
+				nine++;
+			}
+			else
+			{
+				ten++;
+			}
+		}
+			retVal[0]=new Critiqueable[zero];	
+			retVal[1]=new Critiqueable[one];	
+			retVal[2]=new Critiqueable[two];	
+			retVal[3]=new Critiqueable[three];	
+			retVal[4]=new Critiqueable[four];	
+			retVal[5]=new Critiqueable[five];	
+			retVal[6]=new Critiqueable[six];	
+			retVal[7]=new Critiqueable[seven];	
+			retVal[8]=new Critiqueable[eight];	
+			retVal[9]=new Critiqueable[nine];	
+			retVal[10]=new Critiqueable[ten];	
+			int zero1 = 0, one1 = 0, two1 = 0, three1 = 0 , four1 = 0, five1 = 0, six1 = 0, seven1 = 0, eight1 = 0, nine1 = 0, ten1 = 0;
+			for(int a1 = 0; a1 < arr.size(); a1++)
+			{
+				if(arr.get(a1).getStarPower() == 0)
+				{
+					retVal[0][zero1]=arr.get(a1);
+					zero1++;
+				}
+				else if(arr.get(a1).getStarPower() == 1)
+				{
+					retVal[1][one1]=arr.get(a1);
+					one1++;
+				}
+				else if(arr.get(a1).getStarPower() == 2)
+				{
+					retVal[2][two1]=arr.get(a1);
+					two1++;
+				}
+				else if(arr.get(a1).getStarPower() == 3)
+				{
+					retVal[3][three1]=arr.get(a1);
+					three1++;
+				}
+				else if(arr.get(a1).getStarPower() == 4)
+				{
+					retVal[4][four1]=arr.get(a1);
+					four1++;
+				}
+				else if(arr.get(a1).getStarPower() == 5)
+				{
+					retVal[5][five1]=arr.get(a1);
+					five1++;
+				}
+				else if(arr.get(a1).getStarPower() == 6)
+				{
+					retVal[6][six1]=arr.get(a1);
+					six1++;
+				}
+				else if(arr.get(a1).getStarPower() == 7)
+				{
+					retVal[7][seven1]=arr.get(a1);
+					seven1++;
+				}
+				else if(arr.get(a1).getStarPower() == 8)
+				{
+					retVal[8][eight1]=arr.get(a1);
+					eight1++;
+				}
+				else if(arr.get(a1).getStarPower() == 9)
+				{
+					retVal[9][nine1]=arr.get(a1);
+					nine1++;
+				}
+				else
+				{
+					retVal[10][ten1]=arr.get(a1);
+					ten1++;
+				}
+			
+		}
+
+		return retVal;
+	}
+	
+	
+	
+	/**
+	 * The method will return a ragged 2D structure using the ArrayList
+	 * data type - it will have references to deep copies of the critiqueable 
+	 * items currently stored in the CardsAgainstCriticsDeck.  
+	 * 
+	 * The 2D structure will have one row for each single-digit star power
+	 *  value (0 through 9) and then a row for all with higher star power
+	 *  values.  
+	 *  
+	 * Within each row the order will be based on the "front to back" order 
+	 * of them in the deck's single-dimensional structure.
+	 * 
+	 * NOTE: To build this ragged 2D structure, you should only need
+	 * to go through the deck once!
+	 * 
+	 * @return reference to a ragged 2D structure using ArrayLists
+	 */
+	public ArrayList<ArrayList<Critiqueable>> export2Darraylist() {
+		ArrayList<ArrayList<Critiqueable>> retVal =
+				new ArrayList<ArrayList<Critiqueable>>();
+		
+		//YOUR CODE GOES HERE
+		for(int a = 0; a < 11; a++)
+		{
+			retVal.add(new ArrayList<Critiqueable>());
+		}
+		for(int b = 0; b < arr.size(); b++)
+		{
+			if(arr.get(b).getStarPower() > 9)
+			{
+				retVal.get(10).add(arr.get(b));
+			}
+			else 
+			{
+				retVal.get(arr.get(b).getStarPower()).add(arr.get(b));
+			}
+		}
+		return retVal;
+	}
+	
+	
+	
+	
+	/**
+	 * The method will return a String object containing a representation
+	 * of the critiqueable items currently held in the CardsAgainstCriticsDeck, 
+	 * shown in order from "front to back" of the ArrayList holding the references.
+	 * 
+	 * @return String representing the CardsAgainstCriticsDeck
+	 */
+	@Override
+	public String toString() {
+		StringBuffer retVal = new StringBuffer("Contents: ");
+		retVal.append("[ ");
+		for (Critiqueable val : arr) {
+			retVal.append(val + ", ");
+		}
+		if (retVal.lastIndexOf(", ") == retVal.length()-2) {
+			retVal.delete(retVal.length()-2, retVal.length());
+		}
+		retVal.append(" ]");
+
+		return new String(retVal);
+	}
+
+
+
+
+
+
+
+}

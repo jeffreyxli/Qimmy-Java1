@@ -1,0 +1,169 @@
+package studentCode;
+
+public class CryptoCode {
+	//Handles ASCII 32 through ASCII 95
+	static final char LEFT_BOUNDARY = ' ';
+	static final char RIGHT_BOUNDARY = '_';
+
+	static final int RANGE = RIGHT_BOUNDARY-LEFT_BOUNDARY+1;
+
+
+
+	//YOUR CODE WILL BE DOWN HERE
+	//AS YOU WORK ON EACH METHOD, DELETE THE "throw" LINE AND
+	//   ADD YOUR CODE TO IMPLEMENT THE METHOD
+	//TEST AS YOU GO TASK BY TASK
+
+	public static boolean safeToUse(String plaintext) {
+		String caps = plaintext.toUpperCase(); 
+		int counter = 0;
+		for(int iter = 0; iter < caps.length(); iter++)
+		{
+			if(caps.charAt(iter) >= LEFT_BOUNDARY && caps.charAt(iter) <= RIGHT_BOUNDARY)
+			{
+				counter++;
+			}
+		}
+		return (counter==caps.length());
+
+	}
+
+	public static String rot32(String message)
+	{
+		String caps = message.toUpperCase();
+		String fill = "";
+		for(int iter=0; iter < caps.length(); iter++)
+		{
+			char character = caps.charAt(iter);
+			if((int)character+32<95)
+			{
+				character = (char)((int)character+32);
+				fill+=character;
+			}
+			else 
+			{
+				character = (char)((int)character-32);
+				fill+=character;
+			}
+		}
+		return fill;
+	}
+
+
+	public static String toCaesar(String plaintext, int shift)
+	{
+		String caps = plaintext.toUpperCase();
+		String fill = "";
+		for(int iter = 0; iter < caps.length(); iter++)
+		{
+			char character = caps.charAt(iter);
+			if((int)character + shift > 95)
+			{
+				character = (char) (((int)character)+shift-64);
+				fill+=character;
+			}
+			else 
+			{
+				character = (char)((int)character+shift);
+				fill+=character;
+			}
+		}
+		return fill;
+	}
+
+	public static String fromCaesar(String ciphertext, int shift)
+	{
+		String caps = ciphertext.toUpperCase();
+		String fill = "";
+		for(int iter = 0; iter < caps.length(); iter++)
+		{
+			char character = caps.charAt(iter);
+			if((int)character - shift < 32)
+			{
+				character = (char) (((int)character)+shift+64);
+				fill+=character;
+			}
+			else 
+			{
+				character = (char)((int)character-shift);
+				fill+=character;
+			}
+		}
+		return fill;
+	}
+
+
+
+
+	public static String toBellaso(String plaintext, String keyword){
+		String capK = keyword.toUpperCase();
+		String caps = plaintext.toUpperCase();
+		int counter = 0;
+		String repeat = "";
+		String fill = "";
+		for(int iter = 0; iter < caps.length(); iter++)
+		{
+			char r = repeat.charAt(iter);
+			if(counter > capK.length()-1)
+			{
+				counter = 0;
+				r=capK.charAt(counter);
+				counter++;
+			}
+			else 
+			{
+				r=capK.charAt(counter);
+				counter++;
+			}
+
+
+		}
+		for(int iter = 0; iter < caps.length(); iter++)
+		{
+			char character = caps.charAt(iter);
+			char keyChar = repeat.charAt(iter);
+			character = (char)((int)character + (int)keyChar - 32);
+			fill+=character;
+		}
+		return fill;
+	}
+
+	public static String fromBellaso(String ciphertext, String keyword){
+		String capK = keyword.toUpperCase();
+		String caps = ciphertext.toUpperCase();
+		int counter = 0;
+		String repeat = "";
+		String fill = "";
+		for(int iter = 0; iter < caps.length(); iter++)
+		{
+			char r = repeat.charAt(iter);
+			if(counter > capK.length()-1)
+			{
+				counter = 0;
+				r=capK.charAt(counter);
+				counter++;
+			}
+			else 
+			{
+				r=capK.charAt(counter);
+				counter++;
+			}
+
+
+		}
+		for(int iter = 0; iter < caps.length(); iter++)
+		{
+			char character = caps.charAt(iter);
+			char keyChar = repeat.charAt(iter);
+			character = (char)((int)character - (int)keyChar + 32);
+		}
+		return fill;
+	}
+}
+
+
+
+
+
+
+

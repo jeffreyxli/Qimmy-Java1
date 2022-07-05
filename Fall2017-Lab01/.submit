@@ -1,0 +1,11 @@
+# Submit server .submit file for
+#  Course CMSC131
+#  Project Lab01: Lab01
+
+courseName=CMSC131
+semester=201708
+projectNumber=Lab01
+courseKey=d81beead16dcf418
+authentication.type=ldap
+baseURL=https://submit.cs.umd.edu:443/fall2017
+submitURL=https://submit.cs.umd.edu:443/fall2017/eclipse/SubmitProjectViaEclipse
